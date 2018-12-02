@@ -41,6 +41,46 @@ regressor.fit(X_train, y_train)
 y_pred = regressor.predict(X_test)
 
 # backward elimination
+#1. select a significance level to stay in the model
+#2. fit the full model with all possible variabls
+#3. consider the variable with highest P-value, if P > SL, go to step4, otherwise go to FIN
+#4. remove the predictor
+#5. fit the model without this removed variable
 
 import statsmodels.formula.api as sm
 X = np.append(arr = np.ones((50, 1)).astype(int), values=X, axis=1)
+
+X_opt = X[:, [0, 1, 2, 3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0, 1, 3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0, 3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0, 3, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0, 3]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+#predict with x_opt
+# Splitting the dataset into the Training set and Test set
+X_opt_train, X_opt_test, y_opt_train, y_opt_test = train_test_split(X_opt, y, test_size = 0.2, random_state = 0)
+regressor_opt = LinearRegression()
+regressor_opt.fit(X_opt_train, y_opt_train)
+ 
+y_opt_pred = regressor_opt.predict(X_opt_test)
+
+plt.scatter(X_opt_test[:, [1]], y_opt_pred, color = "red")
+plt.scatter(X_test[:, [2]], y_pred, color = "yellow")
+#plt.plot(X_opt_train[:, [1]], regressor_opt.predict(X_opt_train), color="blue")
+plt.xlabel("R&D")
+plt.ylabel("profit")
+plt.show()
